@@ -14,6 +14,9 @@
 # officially supports Python 3.14 (matrix says >=3.10,<=3.14) and ships cp314 CPU
 # wheels. torchvision pins its exact torch version, so these two move together.
 #
+# Verified on Python 3.14.8 (the version Cloud reported) and independently on
+# 3.13.5, so the pins hold across the 3.13-3.14 range rather than only on 3.14.
+#
 # The +cpu suffix only exists on PyTorch's CPU index, hence --extra-index-url.
 # PyPI's default Linux wheels carry the ~2.5 GB CUDA stack; the CPU index keeps
 # the install to ~200 MB. macOS ships no +cpu wheels at all, and its normal PyPI
