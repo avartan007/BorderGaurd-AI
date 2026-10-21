@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Generated detection artefacts (the Streamlit app keeps these in memory)
+static/output_*
+static/report_*
+
+# macOS
+.DS_Store
