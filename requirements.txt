@@ -1,0 +1,25 @@
+# Streamlit Cloud / local dependencies for the DTDS app.
+# Python 3.12 is recommended (Streamlit Cloud: Advanced settings -> Python 3.12).
+
+# Pull torch/torchvision binaries from the CPU-only index so the Linux install
+# stays ~200 MB instead of pulling the ~2.5 GB CUDA build from PyPI.
+# PyTorch does not publish +cpu wheels for macOS, so macOS uses the normal
+# PyPI wheels (which are already CPU builds there).
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.6.0+cpu; sys_platform == "linux"
+torch==2.6.0; sys_platform == "darwin"
+torchvision==0.21.0+cpu; sys_platform == "linux"
+torchvision==0.21.0; sys_platform == "darwin"
+ultralytics>=8.3.0,<9.0.0
+
+streamlit>=1.50,<2.0
+google-genai>=1.0.0
+reportlab>=4.2.0
+opencv-python-headless>=4.10.0
+imageio-ffmpeg>=0.5.0
+Pillow>=10.0.0
+pandas>=2.0.0
+numpy>=1.26
+pydeck>=0.9.0
+altair>=5.0.0
