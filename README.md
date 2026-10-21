@@ -26,6 +26,13 @@ right host for this workload.
 `requirements.txt` pulls CPU-only torch/torchvision wheels (`+cpu`) so the build is
 ~200 MB instead of the ~2.5 GB CUDA build.
 
+`packages.txt` (repo root — Streamlit only reads it there, not in `.streamlit/`)
+apt-installs the graphics libraries OpenCV needs. This is required, not optional:
+`ultralytics` hard-requires `opencv-python` (the GUI build), so pip installs it
+alongside the `opencv-python-headless` pin and its `cv2` wins. Without those
+libraries the build succeeds and the app then dies at startup on `import cv2`
+with `ImportError: libxcb.so.1` / `libGL.so.1`.
+
 ---
 
 ## Deploy to Streamlit Community Cloud
@@ -52,10 +59,11 @@ right host for this workload.
 
 4. Set **Main file path** to `streamlit_app.py`.
 
-5. Open **Advanced settings → Python version** and choose **3.12**. The pinned
-   CPU wheels (`torch==2.6.0+cpu`, `torchvision==0.21.0+cpu`) are cp312-only on
-   the PyTorch CPU index — Python 3.10 (the default in some regions) will fail to
-   resolve them.
+5. **Python version:** leave the default. Streamlit Cloud currently provisions
+   **Python 3.14**, and the pinned CPU wheels (`torch==2.10.0+cpu`,
+   `torchvision==0.25.0+cpu`) are the oldest pair that supports it. The earlier
+   pin (`torch 2.6` / `torchvision 0.21`) is capped at Python ≤3.12 and fails to
+   resolve on 3.14, which is what caused the first deploy build to error out.
 
 6. In **Advanced settings → Secrets**, paste:
 
@@ -254,6 +262,7 @@ scripts/smoke_test.py     detection + PDF + scoring smoke test
 .streamlit/secrets.toml.example
 .env.example              same settings as KEY=value
 requirements.txt          minimal Streamlit Cloud deps (UTF-8)
+packages.txt              apt graphics libs OpenCV needs (read from repo root)
 requirements.lock.txt     original pip freeze, reference only
 app.py                    original FastAPI app (kept)
 best.pt                   YOLOv8 model (12 classes)

@@ -1,0 +1,30 @@
+# System packages installed via apt before pip runs (Streamlit Cloud reads this
+# file from the repo root — NOT from .streamlit/).
+#
+# Why this exists
+# ---------------
+# ultralytics hard-requires opencv-python (the GUI build), so it is installed
+# alongside our opencv-python-headless pin. Both distributions ship a cv2
+# package into the same site-packages; the GUI one wins, and it links against
+# X11 libraries that a minimal image does not provide. The app imports cv2 at
+# threat_core.py, so without these the deploy installs fine and then dies on
+# startup with:
+#
+#   ImportError: libxcb.so.1: cannot open shared object file
+#   ImportError: libGL.so.1: cannot open shared object file
+#
+# Streamlit's own docs cover this: opencv-python-headless alone is not
+# sufficient when a dependency of a library requires the GUI build, and the
+# documented fix is to apt-install the graphics libraries here.
+#
+# libgl1        - libGL.so.1, required by the GUI cv2 build
+# libglib2.0-0  - libgthread/libglib, cv2 and Pillow runtime deps
+# libxcb1       - libxcb.so.1, the first library that failed in testing
+# libsm6, libice6, libxext6, libxrender1 - X11 libs pulled by cv2/GTK paths
+libgl1
+libglib2.0-0
+libxcb1
+libsm6
+libice6
+libxext6
+libxrender1

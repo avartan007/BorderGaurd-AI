@@ -1,16 +1,31 @@
-# Streamlit Cloud / local dependencies for the DTDS app.
-# Python 3.12 is recommended (Streamlit Cloud: Advanced settings -> Python 3.12).
-
-# Pull torch/torchvision binaries from the CPU-only index so the Linux install
-# stays ~200 MB instead of pulling the ~2.5 GB CUDA build from PyPI.
-# PyTorch does not publish +cpu wheels for macOS, so macOS uses the normal
-# PyPI wheels (which are already CPU builds there).
+# BorderGuard AI — runtime dependencies.
+#
+# Why these exact pins
+# --------------------
+# Streamlit Community Cloud provisions Python 3.14 (its build log reported
+# "Using Python 3.14.8"). The previous pin, torch==2.6.0 + torchvision==0.21.0,
+# is unsupported there and the install failed with:
+#
+#   Because torch{sys_platform == 'linux'}==2.6.0+cpu has no wheels with a
+#   matching Python ABI tag ... your requirements are unsatisfiable.
+#
+# PyTorch's own matrix caps that pair at Python <=3.12, and no cp314 wheels were
+# ever published for it. torch 2.10 / torchvision 0.25 is the oldest pair that
+# officially supports Python 3.14 (matrix says >=3.10,<=3.14) and ships cp314 CPU
+# wheels. torchvision pins its exact torch version, so these two move together.
+#
+# The +cpu suffix only exists on PyTorch's CPU index, hence --extra-index-url.
+# PyPI's default Linux wheels carry the ~2.5 GB CUDA stack; the CPU index keeps
+# the install to ~200 MB. macOS ships no +cpu wheels at all, and its normal PyPI
+# wheels are already CPU-only, so darwin gets the plain (no-suffix) versions.
 --extra-index-url https://download.pytorch.org/whl/cpu
 
-torch==2.6.0+cpu; sys_platform == "linux"
-torch==2.6.0; sys_platform == "darwin"
-torchvision==0.21.0+cpu; sys_platform == "linux"
-torchvision==0.21.0; sys_platform == "darwin"
+torch==2.10.0+cpu; sys_platform == "linux"
+torchvision==0.25.0+cpu; sys_platform == "linux"
+
+torch==2.10.0; sys_platform == "darwin"
+torchvision==0.25.0; sys_platform == "darwin"
+
 ultralytics>=8.3.0,<9.0.0
 
 streamlit>=1.50,<2.0
